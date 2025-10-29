@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.Mapper.EmpMapper">
+
+    <!-- 条件总数查询 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*)
+        FROM emp
+        <where>
+            <if test="name != null and name != ''">
+                AND name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="gender != null and gender != ''">
+                AND gender = #{gender}
+            </if>
+            <if test="begin != null and begin != ''">
+                AND entry_date &gt;= #{begin}
+            </if>
+            <if test="end != null and end != ''">
+                AND entry_date &lt;= #{end}
+            </if>
+        </where>
+    </select>
+
+<!--分页查询-->
+    <select id="page" parameterType="java.util.Map" resultType="com.example.Entity.Emp">
+        SELECT e.*, d.name deptName
+        FROM emp e
+        LEFT JOIN tlias.dept d ON e.dept_id = d.id
+        <where>
+            <if test="name != null and name != ''">
+                AND e.name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="gender != null and gender != ''">
+                AND e.gender = #{gender}
+            </if>
+            <if test="begin != null and begin != ''">
+                AND e.entry_date >= #{begin}
+            </if>
+            <if test="end != null and end != ''">
+                AND e.entry_date &lt;= #{end}
+            </if>
+        </where>
+        LIMIT #{start}, #{pageSize}
+    </select>
+
+
+    <update id="update">
+        update emp
+        <set>
+            <if test="username != null">username=#{username},</if>
+            <if test="password != null">password=#{password},</if>
+            <if test="name != null">name=#{name},</if>
+            <if test="gender != null">gender=#{gender},</if>
+            <if test="phone != null">phone=#{phone},</if>
+            <if test="job != null">job=#{job},</if>
+            <if test="salary != null">salary=#{salary},</if>
+            <if test="image != null">image=#{image},</if>
+            <if test="entryDate != null">entry_date=#{entryDate},</if>
+            <if test="deptId != null">dept_id=#{deptId},</if>
+            <if test="updateTime != null">update_time=#{updateTime},</if>
+
+
+        </set>
+        where id=#{id}
+    </update>
+
+
+
+    <delete id="deleteBatch">
+        delete from emp where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    <resultMap id="empResultMap" type="com.example.Entity.Emp" autoMapping="true">
+        <id property="id" column="id"/>
+
+<!--        collection用来封装集合数据，用于一对多-->
+        <collection property="exprList" ofType="com.example.Entity.EmpExpr">
+            <id property="id" column="exprId"/>
+            <result property="begin" column="begin"/>
+            <result property="end" column="end"/>
+            <result property="company" column="company"/>
+            <result property="job" column="job"/>
+        </collection>
+
+
+<!--        autoMapping="true" 自动映射：<id property="id" column="id"/>
+            <result property="deptName" column="deptName"/>-->
+    </resultMap>
+
+    <select id="getById" resultMap="empResultMap">
+        select * from emp e left join tlias.emp_expr ee on e.id=ee.emp_id where e.id = #{id}
+    </select>
+</mapper>

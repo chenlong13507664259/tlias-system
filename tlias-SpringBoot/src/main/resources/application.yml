@@ -1,0 +1,48 @@
+server:
+  #端口优先级：yaml<yml<properties
+  port: 8080
+#
+##定义对象,":"后面有一个空格
+#user:
+#  name: zhangsan
+#  age: 18
+#
+##集合
+#address:
+#  - beijing
+#  - shanghai
+
+
+spring:
+  application:
+    name: SpringBoot02-tlias-web-manager
+    #数据库连接配置信息
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/tlias?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8
+    username: root
+    #0开头需要加''，例如:'012345'
+    password: 123456
+
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
+mybatis:
+  configuration:
+    #日志打印
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+  mapper-locations:
+    - classpath:Mapper/EmpExprMapper.xml
+    - classpath:Mapper/EmpMapper.xml
+    - classpath:Mapper/ClazzMapper.xml
+    - classpath:Mapper/StudentMapper.xml
+
+#aliyun oss配置
+aliyun:
+  oss:
+    endpoint: https://oss-cn-hangzhou.aliyuncs.com
+    bucketName: jackbychen
+

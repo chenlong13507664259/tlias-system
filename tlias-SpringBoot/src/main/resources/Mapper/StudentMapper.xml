@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.Mapper.StudentMapper">
+
+    <!-- 定义联合查询结果映射 -->
+    <resultMap id="StudentWithClazzResultMap" type="com.example.Entity.Student">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="gender" column="gender"/>
+        <result property="degree" column="degree"/>
+        <result property="clazzId" column="clazz_id"/>
+        <result property="clazzName" column="clazz_name"/>
+<!--        <result property="headTeacher" column="head_teacher"/>-->
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM student
+        <where>
+            <if test="name != null and name != ''">AND name LIKE CONCAT('%', #{name}, '%')</if>
+            <if test="degree != null and degree != ''">AND degree LIKE CONCAT('%', #{degree}, '%')</if>
+            <if test="clazzId != null and clazzId != ''">AND clazz_id LIKE CONCAT('%', #{clazzId}, '%')</if>
+        </where>
+    </select>
+
+    <select id="studentPage" resultMap="StudentWithClazzResultMap">
+        SELECT student.*, clazz.name AS clazz_name
+        FROM student
+        JOIN clazz ON student.clazz_id = clazz.id
+        <where>
+            <if test="name != null and name != ''">
+                AND student.name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="degree != null and degree != ''">
+                AND student.degree LIKE CONCAT('%', #{degree}, '%')
+            </if>
+            <if test="clazzId != null and clazzId != ''">
+                AND student.clazz_id LIKE CONCAT('%', #{clazzId}, '%')
+            </if>
+        </where>
+        LIMIT #{start}, #{pageSize}
+    </select>
+
+</mapper>
